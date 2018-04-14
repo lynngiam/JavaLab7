@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 public class RBTreeMap<K extends Comparable<? super K>, V> implements MapADT<K, V> {
-    static public int RED = 1, BLACK = 2; // two possible colors
+    static final public int RED = 1, BLACK = 2; // two possible colors
 
     int color;
     /** The color of this node (RED or BLACK) */
@@ -43,7 +43,7 @@ public class RBTreeMap<K extends Comparable<? super K>, V> implements MapADT<K, 
 	} else {
 	    if (key.compareTo(searchKey) == 0) {
 		return value;
-	    } else if (key.compareTo(searchKey) < 0) {
+	    } else if (searchKey.compareTo(key) < 0) {
 		return left.get(searchKey);
 	    } else {
 		return right.get(searchKey);
@@ -67,12 +67,13 @@ public class RBTreeMap<K extends Comparable<? super K>, V> implements MapADT<K, 
 	// insert node or update value
 	if (isEmpty()) { // base case I: empty tree
 	    // TODO: implement this case
+	    this.key = key;
+	    this.value = value;
+	    this.color = RED;
+	    left = new RBTreeMap<K, V>();
+	    right = new RBTreeMap<K, V>();
 	    if (parent == null) {
-		RBTreeMap newLeaf = new RBTreeMap(key, value, new RBTreeMap<K, V>(), new RBTreeMap<K, V>());
-		newLeaf.color = 2;
-	    } else {
-		RBTreeMap newLeaf = new RBTreeMap(key, value, new RBTreeMap<K, V>(), new RBTreeMap<K, V>());
-		newLeaf.color = 1;
+		this.color = BLACK;
 	    }
 	} else {
 	    // TODO: implement the other put cases
@@ -94,7 +95,7 @@ public class RBTreeMap<K extends Comparable<? super K>, V> implements MapADT<K, 
 	if (parent == null) {
 	    // adjustment case I: this is the root, so paint it black
 	    // TODO: implement this case
-	    this.color = 2;
+	    this.color = BLACK;
 	} else if (color == RED && parent.color == RED) {
 	    // consecutive red nodes -- do something!
 
@@ -108,9 +109,9 @@ public class RBTreeMap<K extends Comparable<? super K>, V> implements MapADT<K, 
 	    if (uncle.color == RED) {
 		// adjustment case II: the uncle is red, so recolor
 		// TODO: Implement this case
-		parent.color = 2;
-		uncle.color = 2;
-		gran.color = 1;
+		parent.color = BLACK;
+		uncle.color = BLACK;
+		gran.color = RED;
 	    } else {
 		// adjustment case II: the uncle is black, so rotate
 		// TODO: Implement this case
@@ -126,7 +127,7 @@ public class RBTreeMap<K extends Comparable<? super K>, V> implements MapADT<K, 
 			rotateRight(parent); // RL; rotate right then left
 			rotateLeft(gran);
 		    }
-		} else if (this.key.compareTo(parent.key) > 0) {
+		} else {
 		    if (parent.key.compareTo(gran.key) < 0) {
 			rotateLeft(parent); // LR; rotate left then right
 			rotateRight(gran);
