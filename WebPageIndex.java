@@ -107,31 +107,50 @@ public class WebPageIndex {
     * work on these after you have the previous methods working correctly
     */
    
+      // Create scanner to break down words in s and put them into an arraylist. 
+   private static List<String> phraseToList(String s) {
+	   Scanner phrase = new Scanner(s);
+	      List<String> wordsInPhrase = new ArrayList<String>();
+	      
+	      while (phrase.hasNext()) {
+	    	  String word = phrase.next();
+	    	  wordsInPhrase.add(word);
+	      }
+	      return wordsInPhrase;
+   }
+   
+   //Check each word in the list is found in the web page
+   private boolean eachWordPresent(List<String> wordList) {
+	   for (String word : wordList) {
+	    	  if (!contains(word)) {
+	    		  return false;
+	    	  }
+	      }
+	   return true;
+   }
+   
+   // Returns a list of the the location lists for each word.
+   private List<List<Integer>> getLocationsList(List<String> wordList) {
+	   	List<List<Integer>> indices = new ArrayList<List<Integer>>();      
+	      
+	   	for (String word : wordList) {
+	   		List<Integer> positions = map.get(word);
+	   		indices.add(positions);
+	   	}
+	   	
+	   	return indices;
+	    
+   }
+   
    public boolean containsPhrase(String s) {
-	   // Create scanner to break down words in s and put them into an arraylist. 
-      Scanner phrase = new Scanner(s);
-      List<String> wordsInPhrase = new ArrayList<String>();
-      
-      while (phrase.hasNext()) {
-    	  String word = phrase.next();
-    	  wordsInPhrase.add(word);
-      }
+      List<String> wordsInPhrase = phraseToList(s);
       
       // Check that all words in the phrase s are in the web page.
-      for (String word : wordsInPhrase) {
-    	  if (!contains(word)) {
-    		  return false;
-    	  }
-      }
+      if (!eachWordPresent(wordsInPhrase)) return false;
       
       // Create arraylist indices which contains the positions where each word, in phrase s,
       //occurs in the web page.
-      List<List<Integer>> indices = new ArrayList<List<Integer>>();      
-      
-      for (String word : wordsInPhrase) {
-    	  List<Integer> positions = map.get(word);
-    	  indices.add(positions);
-      }
+      List<List<Integer>> indices = getLocationsList(wordsInPhrase);
       
       // Go through each positions of the first word in s and trace a path through 
       //next words. Return true if their positions increment by 1. Otherwise, false.
@@ -162,19 +181,36 @@ public class WebPageIndex {
    }
    
    public int getPhraseCount(String s) {
-      // TODO - implement me! - add some comments too!
-      return -1;
+	   //First 3 lines similar to containsPhrase().
+	   List<String> wordsInPhrase = phraseToList(s);
+	   if (!eachWordPresent(wordsInPhrase)) return 0;
+	   List<List<Integer>> indices = getLocationsList(wordsInPhrase);
+	      
+	   // If a phrase is found, using containsPhraseHelper, increment phraseCount by 1.
+	   int phraseCount = 0;
+	   List<Integer> firstWordPositions = indices.get(0);
+	   for (Integer pos : firstWordPositions) {
+		   if (containsPhraseHelper(pos, indices, 1)) phraseCount++;
+	   }
+      return phraseCount;
    }
    
    public double getPhraseFrequency(String s) {
-      // TODO - implement me! - add some comments too!
-      return -1.0;
+      return (double) getPhraseCount(s) / getWordCount() ;
    }
 
    public List<Integer> getPhraseLocations(String s) {
-      // TODO - implement me! - add some comments too!
-      return null;
-   }
-   
-   
+	   //First 3 lines similar to containsPhrase().
+	   List<String> wordsInPhrase = phraseToList(s);
+	   if (!eachWordPresent(wordsInPhrase)) return new ArrayList<Integer>();
+	   List<List<Integer>> indices = getLocationsList(wordsInPhrase);
+
+	   // If a phrase is found, using containsPhraseHelper, add the first word's position to phraseLocations.
+	   List<Integer> phraseLocations = new ArrayList<Integer>();
+	   List<Integer> firstWordPositions = indices.get(0);
+	   for (Integer pos : firstWordPositions) {
+		   if (containsPhraseHelper(pos, indices, 1)) phraseLocations.add(pos);
+	   }
+	   return phraseLocations;
+   }   
 }
