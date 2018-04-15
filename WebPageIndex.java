@@ -102,8 +102,57 @@ public class WebPageIndex {
     */
    
    public boolean containsPhrase(String s) {
-      // TODO - implement me! - add some comments too!
-      return false;
+	   // Create scanner to break down words in s and put them into an arraylist. 
+      Scanner phrase = new Scanner(s);
+      List<String> wordsInPhrase = new ArrayList<String>();
+      
+      while (phrase.hasNext()) {
+    	  String word = phrase.next();
+    	  wordsInPhrase.add(word);
+      }
+      
+      // Check that all words in the phrase s are in the web page.
+      for (String word : wordsInPhrase) {
+    	  if (!contains(word)) {
+    		  return false;
+    	  }
+      }
+      
+      // Create arraylist indices which contains the positions where each word, in phrase s,
+      //occurs in the web page.
+      List<List<Integer>> indices = new ArrayList<List<Integer>>();      
+      
+      for (String word : wordsInPhrase) {
+    	  List<Integer> positions = map.get(word);
+    	  indices.add(positions);
+      }
+      
+      // Go through each positions of the first word in s and trace a path through 
+      //next words. Return true if their positions increment by 1. Otherwise, false.
+      boolean contains = false;
+      List<Integer> firstWordPositions = indices.get(0); 
+      for (Integer pos : firstWordPositions) {
+    	  if (containsPhraseHelper(pos, indices, 1)) {
+    		  contains = true;
+    		  break;
+    	  }
+      }
+      return contains;
+   }
+   
+   // Private recursive method called by containsPhrase(). If the next word's position is 1 greater than the current,
+   //recurse and do it again for the next and the word after next. Stop when the word index exceeds size.
+   private boolean containsPhraseHelper(Integer pos, List<List<Integer>> indices, Integer nextListIndex) {
+	   if (indices.size() <= nextListIndex) return true;
+	   
+	   List<Integer> nextList = indices.get(nextListIndex);
+	   for (Integer nextPos : nextList) {
+		   if (nextPos - pos == 1) {
+			   return containsPhraseHelper(nextPos, indices, nextListIndex + 1);
+		   }
+	   }
+	   
+	   return false;
    }
    
    public int getPhraseCount(String s) {
