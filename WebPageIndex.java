@@ -84,18 +84,18 @@ public class WebPageIndex {
    }
 
    // The main method is an application using a WebPageIndex
-   public static void main(String[] args) throws IOException {
+   public static void main(String[] args) {
 	   try {
 		   WebPageIndex input = new WebPageIndex(args[0]);
 		   Iterator<String> words = input.words();
 		   while (words.hasNext()) {
 			   String word = words.next();
-			   System.out.print(word + " ");
-			   System.out.print(input.getFrequency(word) + " ");
-			   System.out.println(input.getLocations(word));
+			   System.out.printf("%-15s", word);
+			   System.out.printf("%-10.5f", input.getFrequency(word));
+			   System.out.printf("%s\n", input.getLocations(word));
 		   }
 	   } catch (IOException e) {
-		   System.err.println(e.getMessage());
+		   System.err.println("No such file or directory.");
 	   } catch (IndexOutOfBoundsException e) {
 		   System.err.println("No input file detected.");
 	   }
