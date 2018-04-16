@@ -8,22 +8,22 @@ public class WebPageIndex {
    //TODO: Insert the instance variables here
 
    // WebPageIndex constructor
-   WebPageIndex(String url) throws IOException{
+  WebPageIndex(String url) throws IOException{
 	   baseUrl = url;
 	   wordCount = 1;
 	   HTMLScanner input = new HTMLScanner(baseUrl);
 	   
 	   while (input.hasNext()) {
 		   
-		   String currentWord = input.next();
+		   String currentWord = input.next().toLowerCase();
 		   
+		   if (currentWord.equals("java")) {System.out.println(getLocations(currentWord));}
 		   // Finds the current values associated with the current word.
 		   List<Integer> currentValues = map.get(currentWord);
 		   // If there are no current values, make a new list and put in the first one.
 		   if (currentValues == null) {
 			   List<Integer> posList = new LinkedList<Integer>();
 			   posList.add(wordCount-1);
-			   currentWord = currentWord.toLowerCase();
 			   map.put(currentWord, posList);
 			   // Otherwise, add the new value to the existing list.
 		   } else {
@@ -33,7 +33,7 @@ public class WebPageIndex {
 		   wordCount++;
 	   }
 	   System.out.println();
-   }     
+   }    
    
    // Returns a count of the words in this web page
    public int getWordCount() {
